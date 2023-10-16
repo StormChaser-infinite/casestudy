@@ -13,7 +13,14 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[calc_total_amount]"
+				},
+				"linkedServiceName": {
+					"referenceName": "project_test",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"annotations": []
