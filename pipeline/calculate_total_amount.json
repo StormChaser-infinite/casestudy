@@ -1,0 +1,28 @@
+{
+	"name": "calculate_total_amount",
+	"properties": {
+		"activities": [
+			{
+				"name": "calculate_total_amount",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[calc_total_amount]"
+				},
+				"linkedServiceName": {
+					"referenceName": "project_test",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": []
+	}
+}

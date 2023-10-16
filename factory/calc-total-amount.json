@@ -1,0 +1,9 @@
+{
+	"name": "calc-total-amount",
+	"location": "australiaeast",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "cc075f1c-6619-491d-919f-a6243d50cd29",
+		"tenantId": "deff24bb-2089-4400-8c8e-f71e680378b2"
+	}
+}
