@@ -1,0 +1,40 @@
+{
+	"name": "FKTA_D_COUNTRY",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "project_test",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "FKCO_ID",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "FKCO_V_COUNTRY_ISO2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "FKCO_V_COUNTRY_ISO3",
+				"type": "nvarchar"
+			},
+			{
+				"name": "FKCO_V_COUNTRY_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "FKCO_I_COUNTRY_NUM",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FKTA_D_COUNTRY"
+		}
+	}
+}

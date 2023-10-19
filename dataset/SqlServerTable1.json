@@ -1,0 +1,37 @@
+{
+	"name": "SqlServerTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "project_test",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "FKCO_ID",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 0
+			},
+			{
+				"name": "FKCO_V_VALUE",
+				"type": "varchar"
+			},
+			{
+				"name": "FKCO_V_COUNTRY_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "FKCO_COUNTRY",
+				"type": "decimal",
+				"precision": 22,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FKTA_D_CORRESPONDANT"
+		}
+	}
+}

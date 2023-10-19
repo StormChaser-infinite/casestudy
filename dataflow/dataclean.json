@@ -1,0 +1,69 @@
+{
+	"name": "dataclean",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SqlServerTable1",
+						"type": "DatasetReference"
+					},
+					"name": "correspondanttable",
+					"description": "Import data from  FKTA_D_CORRESPONDANT] "
+				},
+				{
+					"dataset": {
+						"referenceName": "FKTA_D_COUNTRY",
+						"type": "DatasetReference"
+					},
+					"name": "countrytable",
+					"description": "[FKTA_D_COUNTRY]"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "filtercountrycode",
+					"description": "filter the country table where code > 0"
+				},
+				{
+					"name": "joinwithcountry",
+					"description": "to get the columns [FKCO_V_COUNTRY_ISO2]\n      ,[FKCO_V_COUNTRY_ISO3]"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     countrycode as integer (0)",
+				"}",
+				"source(output(",
+				"          FKCO_ID as decimal(22,0),",
+				"          FKCO_V_VALUE as string,",
+				"          FKCO_V_COUNTRY_NAME as string,",
+				"          FKCO_COUNTRY as decimal(22,0)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> correspondanttable",
+				"source(output(",
+				"          FKCO_ID as integer,",
+				"          FKCO_V_COUNTRY_ISO2 as string,",
+				"          FKCO_V_COUNTRY_ISO3 as string,",
+				"          FKCO_V_COUNTRY_NAME as string,",
+				"          FKCO_I_COUNTRY_NUM as decimal(22,0)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> countrytable",
+				"correspondanttable filter(FKCO_COUNTRY > 0) ~> filtercountrycode",
+				"filtercountrycode, countrytable join(FKCO_COUNTRY == countrytable@FKCO_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinwithcountry"
+			]
+		}
+	}
+}
