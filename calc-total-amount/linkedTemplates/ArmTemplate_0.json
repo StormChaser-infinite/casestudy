@@ -66,6 +66,114 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/FKTA_D_COUNTRY')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "project_test",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "FKCO_ID",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "FKCO_V_COUNTRY_ISO2",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FKCO_V_COUNTRY_ISO3",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FKCO_V_COUNTRY_NAME",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FKCO_I_COUNTRY_NUM",
+						"type": "decimal",
+						"precision": 22,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "FKTA_D_COUNTRY"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/project_test')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlServerTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "project_test",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "FKCO_ID",
+						"type": "decimal",
+						"precision": 22,
+						"scale": 0
+					},
+					{
+						"name": "FKCO_V_VALUE",
+						"type": "varchar"
+					},
+					{
+						"name": "FKCO_V_COUNTRY_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "FKCO_COUNTRY",
+						"type": "decimal",
+						"precision": 22,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "FKTA_D_CORRESPONDANT"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/project_test')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlServerTable2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "project_test",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "correspondant_country_iso"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/project_test')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/execute-at-seven')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -102,6 +210,162 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/calculate_total_amount')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/datacleanjoin')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "SqlServerTable1",
+								"type": "DatasetReference"
+							},
+							"name": "correspondanttable",
+							"description": "Import data from  FKTA_D_CORRESPONDANT] "
+						},
+						{
+							"dataset": {
+								"referenceName": "FKTA_D_COUNTRY",
+								"type": "DatasetReference"
+							},
+							"name": "countrytable",
+							"description": "[[FKTA_D_COUNTRY]"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SqlServerTable2",
+								"type": "DatasetReference"
+							},
+							"name": "correspomdantcoutryiso"
+						}
+					],
+					"transformations": [
+						{
+							"name": "filtercountrycode",
+							"description": "filter the country table where code > 0"
+						},
+						{
+							"name": "joinwithcountry",
+							"description": "to get the columns [FKCO_V_COUNTRY_ISO2]\n      ,[FKCO_V_COUNTRY_ISO3]"
+						},
+						{
+							"name": "selectisocol",
+							"description": "Renaming countrytable to selectisocol with columns FKCO_V_COUNTRY_ISO2, FKCO_V_COUNTRY_ISO3, "
+						},
+						{
+							"name": "adddatetimecol",
+							"description": "add timestamp"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          FKCO_ID as decimal(22,0),",
+						"          FKCO_V_VALUE as string,",
+						"          FKCO_V_COUNTRY_NAME as string,",
+						"          FKCO_COUNTRY as decimal(22,0)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> correspondanttable",
+						"source(output(",
+						"          FKCO_ID as integer,",
+						"          FKCO_V_COUNTRY_ISO2 as string,",
+						"          FKCO_V_COUNTRY_ISO3 as string,",
+						"          FKCO_V_COUNTRY_NAME as string,",
+						"          FKCO_I_COUNTRY_NUM as decimal(22,0)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> countrytable",
+						"correspondanttable filter(FKCO_COUNTRY > 0) ~> filtercountrycode",
+						"filtercountrycode, countrytable join(FKCO_COUNTRY == countrytable@FKCO_ID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> joinwithcountry",
+						"joinwithcountry select(mapColumn(",
+						"          FKCO_ID = correspondanttable@FKCO_ID,",
+						"          FKCO_V_VALUE,",
+						"          FKCO_V_COUNTRY_NAME = correspondanttable@FKCO_V_COUNTRY_NAME,",
+						"          FKCO_COUNTRY,",
+						"          FKCO_V_COUNTRY_ISO2,",
+						"          FKCO_V_COUNTRY_ISO3",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectisocol",
+						"selectisocol derive(TimeStamp = fromUTC(currentUTC(), \"NZ\")) ~> adddatetimecol",
+						"adddatetimecol sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> correspomdantcoutryiso"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SqlServerTable1')]",
+				"[concat(variables('factoryId'), '/datasets/FKTA_D_COUNTRY')]",
+				"[concat(variables('factoryId'), '/datasets/SqlServerTable2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow-cleanjoindata-test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "datacleanjointest",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "datacleanjoin",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"correspondanttable": {},
+									"countrytable": {},
+									"correspomdantcoutryiso": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/datacleanjoin')]"
 			]
 		}
 	]
