@@ -21,7 +21,15 @@
 					"description": "[FKTA_D_COUNTRY]"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SqlServerTable2",
+						"type": "DatasetReference"
+					},
+					"name": "correspomdantcoutryiso"
+				}
+			],
 			"transformations": [
 				{
 					"name": "filtercountrycode",
@@ -76,7 +84,16 @@
 				"          FKCO_V_COUNTRY_ISO3",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selectisocol"
+				"     skipDuplicateMapOutputs: true) ~> selectisocol",
+				"selectisocol sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> correspomdantcoutryiso"
 			]
 		}
 	}
