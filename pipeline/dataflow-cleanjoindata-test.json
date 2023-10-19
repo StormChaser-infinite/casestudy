@@ -1,5 +1,5 @@
 {
-	"name": "dataflow-cleandata-test",
+	"name": "dataflow-cleanjoindata-test",
 	"properties": {
 		"activities": [
 			{
