@@ -42,12 +42,13 @@
 				{
 					"name": "selectisocol",
 					"description": "Renaming countrytable to selectisocol with columns FKCO_V_COUNTRY_ISO2, FKCO_V_COUNTRY_ISO3, "
+				},
+				{
+					"name": "adddatetimecol",
+					"description": "add timestamp"
 				}
 			],
 			"scriptLines": [
-				"parameters{",
-				"     countrycode as timestamp (currentTimestamp())",
-				"}",
 				"source(output(",
 				"          FKCO_ID as decimal(22,0),",
 				"          FKCO_V_VALUE as string,",
@@ -85,7 +86,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectisocol",
-				"selectisocol sink(allowSchemaDrift: true,",
+				"selectisocol derive(TimeStamp = fromUTC(currentUTC(), \"NZ\")) ~> adddatetimecol",
+				"adddatetimecol sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
