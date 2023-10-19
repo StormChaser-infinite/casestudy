@@ -46,7 +46,7 @@
 			],
 			"scriptLines": [
 				"parameters{",
-				"     countrycode as integer (0)",
+				"     countrycode as timestamp (currentTimestamp())",
 				"}",
 				"source(output(",
 				"          FKCO_ID as decimal(22,0),",
