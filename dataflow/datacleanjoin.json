@@ -30,6 +30,10 @@
 				{
 					"name": "joinwithcountry",
 					"description": "to get the columns [FKCO_V_COUNTRY_ISO2]\n      ,[FKCO_V_COUNTRY_ISO3]"
+				},
+				{
+					"name": "selectisocol",
+					"description": "Renaming countrytable to selectisocol with columns FKCO_V_COUNTRY_ISO2, FKCO_V_COUNTRY_ISO3, "
 				}
 			],
 			"scriptLines": [
@@ -62,7 +66,17 @@
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> joinwithcountry"
+				"     broadcast: 'auto')~> joinwithcountry",
+				"joinwithcountry select(mapColumn(",
+				"          FKCO_ID = correspondanttable@FKCO_ID,",
+				"          FKCO_V_VALUE,",
+				"          FKCO_V_COUNTRY_NAME = correspondanttable@FKCO_V_COUNTRY_NAME,",
+				"          FKCO_COUNTRY,",
+				"          FKCO_V_COUNTRY_ISO2,",
+				"          FKCO_V_COUNTRY_ISO3",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectisocol"
 			]
 		}
 	}
